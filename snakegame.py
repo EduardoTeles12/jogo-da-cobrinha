@@ -30,6 +30,7 @@ RIGHT = (1, 0)
 eat_sound = pygame.mixer.Sound("comendomaca.wav")
 game_over_sound = pygame.mixer.Sound("Burro_-Burro.wav")
 pygame.mixer.music.load("V E N O M - T Á F I C A N D O A P E R T A D O.mp3")
+pygame.mixer.music.set_volume(0.5)  # Define o volume inicial da música de fundo
 
 # Carregando a imagem da maçã
 apple_image = pygame.image.load("04-14.png")
@@ -59,7 +60,7 @@ def show_start_screen(screen):
 
     font = pygame.font.Font(None, 24)
     text = font.render("Nome do jogador:", True, WHITE)
-    screen.blit(text, (WINDOW_SIZE[0] // 2 - 220, WINDOW_SIZE[1] // 2 + 20)) 
+    screen.blit(text, (WINDOW_SIZE[0] // 2 - 220, WINDOW_SIZE[1] // 2 + 20))  # Ajusta posição do texto para mais à esquerda
 
     input_rect = pygame.Rect(WINDOW_SIZE[0] // 2 - 40, WINDOW_SIZE[1] // 2 + 20, 200, 30)
     pygame.draw.rect(screen, WHITE, input_rect, 2)
@@ -89,14 +90,18 @@ def show_start_screen(screen):
 
     return player_name
 
-# Função para exibir o menu de jogo novamente (game over)
-def show_game_over_screen(screen):
+# Função para exibir a tela de game over
+def show_game_over_screen(screen, apple_count):
     pygame.mixer.music.stop()  # Parar música de fundo ao chegar ao game over
     screen.blit(game_over_bg, (0, 0))  # Desenha a imagem de fundo do game over
 
-    font = pygame.font.Font(None, 36)
-    text = font.render("Game Over - Pressione Enter para jogar novamente ou Shift para sair", True, WHITE)
-    text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+    font = pygame.font.Font(None, 18)
+    text = font.render(f"Maçãs comidas: {apple_count}", True, WHITE)
+    text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 50))
+    screen.blit(text, text_rect)
+
+    text = font.render("Pressione Enter para jogar novamente ou Shift para sair", True, WHITE)
+    text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 100))
     screen.blit(text, text_rect)
 
     pygame.display.flip()
@@ -114,3 +119,94 @@ def show_game_over_screen(screen):
                 elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     pygame.quit()
                     quit()
+
+# Função principal do jogo
+def main():
+    global screen
+
+    # Inicialização da tela do jogo
+    screen = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption('COBRAO GAME')
+
+    # Tocar música de fundo em loop
+    pygame.mixer.music.play(-1)
+
+    while True:  # Loop para permitir jogar novamente
+        player_name = show_start_screen(screen)
+        print("Nome do jogador:", player_name)
+
+        # Variáveis para o jogo
+        apple_count = 0
+
+        # Inicialização da cobra
+        snake = [[GRID_WIDTH // 2, GRID_HEIGHT // 2]]
+        snake_direction = RIGHT
+        snake_length = INITIAL_LENGTH
+
+        # Posição inicial da maçã
+        apple = [random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1)]
+
+        # Controle de tempo
+        clock = pygame.time.Clock()
+
+        # Loop principal do jogo
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            # Verificação contínua das teclas pressionadas
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_UP] and snake_direction != DOWN:
+                snake_direction = UP
+            elif keys[pygame.K_DOWN] and snake_direction != UP:
+                snake_direction = DOWN
+            elif keys[pygame.K_LEFT] and snake_direction != RIGHT:
+                snake_direction = LEFT
+            elif keys[pygame.K_RIGHT] and snake_direction != LEFT:
+                snake_direction = RIGHT
+
+            # Movimento da cobra
+            new_head = [snake[0][0] + snake_direction[0], snake[0][1] + snake_direction[1]]
+
+            # Verificação de colisão da cobra com as bordas
+            if new_head[0] < 0 or new_head[0] >= GRID_WIDTH or new_head[1] < 0 or new_head[1] >= GRID_HEIGHT:
+                running = False
+
+            # Verificação de colisão da cobra com ela mesma
+            if new_head in snake[1:]:
+                running = False
+
+            # Verificação de colisão da cobra com a maçã
+            if new_head == apple:
+                apple = [random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1)]
+                snake_length += 1
+                apple_count += 1
+                eat_sound.play()  # Reproduzir som ao comer a maçã
+            else:
+                snake.pop()
+
+            snake.insert(0, new_head)
+
+            # Desenhar na tela
+            screen.fill(BLACK)
+            draw_snake(screen, snake)
+            screen.blit(apple_image, (apple[0] * GRID_SIZE, apple[1] * GRID_SIZE))  # Desenha a imagem da maçã
+
+            # Exibir nome do jogador e quantidade de maçãs comidas
+            font = pygame.font.Font(None, 18)
+            text = font.render(f"Jogador: {player_name}  |  Maçãs comidas: {apple_count}", True, WHITE)
+            screen.blit(text, (10, 10))
+
+            pygame.display.flip()
+
+            # Controle de velocidade da cobra
+            clock.tick(SNAKE_SPEED)
+
+        # Após sair do loop principal (jogo terminado)
+        game_over_sound.play()  # Reproduzir som de game over
+        show_game_over_screen(screen, apple_count)
+
+if __name__ == "__main__":
+    main()
