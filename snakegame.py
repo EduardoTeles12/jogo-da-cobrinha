@@ -28,5 +28,17 @@ RIGHT = (1, 0)
 
 # Carregando os sons
 eat_sound = pygame.mixer.Sound("comendomaca.wav")
-game_over_sound = pygame.mixer.Sound("burro_-burro.wav")
+game_over_sound = pygame.mixer.Sound("Burro_-Burro.wav")
 pygame.mixer.music.load("V E N O M - T Á F I C A N D O A P E R T A D O.mp3")
+
+# Carregando a imagem da maçã
+apple_image = pygame.image.load("04-14.png")
+apple_image = pygame.transform.scale(apple_image, (GRID_SIZE, GRID_SIZE))  # Redimensiona a imagem para o tamanho da grade
+
+# Carregando imagens do menu
+menu_bg = pygame.image.load("snake.png")
+menu_bg = pygame.transform.scale(menu_bg, WINDOW_SIZE)
+
+# Carregando imagens do game over
+game_over_bg = pygame.image.load("images.png")
+game_over_bg = pygame.transform.scale(game_over_bg, WINDOW_SIZE)
