@@ -30,11 +30,12 @@ RIGHT = (1, 0)
 eat_sound = pygame.mixer.Sound("comendomaca.wav")
 game_over_sound = pygame.mixer.Sound("Burro_-Burro.wav")
 pygame.mixer.music.load("V E N O M - T Á F I C A N D O A P E R T A D O.mp3")
-pygame.mixer.music.set_volume(0.5)  # Define o volume inicial da música de fundo
+pygame.mixer.music.set_volume(0.2)  # Define o volume inicial da música de fundo
+
 
 # Carregando a imagem da maçã
 apple_image = pygame.image.load("04-14.png")
-apple_image = pygame.transform.scale(apple_image, (GRID_SIZE, GRID_SIZE))  # Redimensiona a imagem para o tamanho da grade
+apple_image = pygame.transform.scale(apple_image, (GRID_SIZE, GRID_SIZE)) 
 
 # Carregando imagens do menu
 menu_bg = pygame.image.load("snake.png")
@@ -51,7 +52,7 @@ def draw_snake(screen, snake):
 
 # Função para exibir o menu inicial
 def show_start_screen(screen):
-    screen.blit(menu_bg, (0, 0))  # Desenha a imagem de fundo do menu inicial
+    screen.blit(menu_bg, (0, 0))  
 
     font = pygame.font.Font(None, 36)
     text = font.render("Pressione Enter para iniciar", True, WHITE)
@@ -60,7 +61,7 @@ def show_start_screen(screen):
 
     font = pygame.font.Font(None, 24)
     text = font.render("Nome do jogador:", True, WHITE)
-    screen.blit(text, (WINDOW_SIZE[0] // 2 - 220, WINDOW_SIZE[1] // 2 + 20))  # Ajusta posição do texto para mais à esquerda
+    screen.blit(text, (WINDOW_SIZE[0] // 2 - 220, WINDOW_SIZE[1] // 2 + 20))  
 
     input_rect = pygame.Rect(WINDOW_SIZE[0] // 2 - 40, WINDOW_SIZE[1] // 2 + 20, 200, 30)
     pygame.draw.rect(screen, WHITE, input_rect, 2)
@@ -78,8 +79,8 @@ def show_start_screen(screen):
                 if event.key == pygame.K_RETURN:
                     input_active = False
                 elif event.key == pygame.K_BACKSPACE:
-                    player_name = player_name[:-1]  # Apaga o último caractere
-                elif event.unicode.isalnum():  # Aceita apenas caracteres alfanuméricos
+                    player_name = player_name[:-1]  
+                elif event.unicode.isalnum():  
                     player_name += event.unicode
 
         input_surface = font.render(player_name, True, WHITE)
@@ -93,9 +94,9 @@ def show_start_screen(screen):
 # Função para exibir a tela de game over
 def show_game_over_screen(screen, apple_count):
     pygame.mixer.music.stop()  # Parar música de fundo ao chegar ao game over
-    screen.blit(game_over_bg, (0, 0))  # Desenha a imagem de fundo do game over
+    screen.blit(game_over_bg, (0, 0))  
 
-    font = pygame.font.Font(None, 18)
+    font = pygame.font.Font(None, 27)
     text = font.render(f"Maçãs comidas: {apple_count}", True, WHITE)
     text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 50))
     screen.blit(text, text_rect)
@@ -195,7 +196,7 @@ def main():
             screen.blit(apple_image, (apple[0] * GRID_SIZE, apple[1] * GRID_SIZE))  # Desenha a imagem da maçã
 
             # Exibir nome do jogador e quantidade de maçãs comidas
-            font = pygame.font.Font(None, 18)
+            font = pygame.font.Font(None, 27)
             text = font.render(f"Jogador: {player_name}  |  Maçãs comidas: {apple_count}", True, WHITE)
             screen.blit(text, (10, 10))
 
@@ -208,5 +209,5 @@ def main():
         game_over_sound.play()  # Reproduzir som de game over
         show_game_over_screen(screen, apple_count)
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     main()
